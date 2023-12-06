@@ -7,6 +7,8 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import torch
+import requests
+import os
 
 
 st.set_page_config(page_title="TechScan NN", layout="wide")
@@ -14,6 +16,37 @@ st.set_page_config(page_title="TechScan NN", layout="wide")
 st.title("TechScan NN")
 st.title("Reconocimiento de Texto en Imágenes de Equipos Eléctricos")
 st.write("Esta aplicación permite clasificar imágenes en 4 clases diferentes (trasformadores, placas de transformadores, características de postros y placas de postes). Adicionalmente, si la imagen pertence a las clases de placas, se ejecutan modelos de detección de objetos y aplicación de máscaras para reconocer el texto. Se realizar el procesamiento una imagen a la vez.")
+
+# CARGA DE MODELOS QUE UTILIZA LA PÁGINA
+
+# carga modelo de clasificación streamlit
+if not os.path.exists("models/clf_model.h5"):
+    model_clsf_path = 'https://github.com/j2sanabriam/Proyecto_DL/blob/16ef8c600adf08b3ed55e2a50b2cb5a7485f1a2a/App/models/clf_model.h5?raw=true'
+    response = requests.get(model_clsf_path)
+    with open("models/clf_model.h5", "wb") as file:
+        file.write(response.content)
+
+# carga modelo de YOLO streamlit
+if not os.path.exists("models/YOLO_model.pt"):
+    model_yolo_path = 'https://github.com/j2sanabriam/Proyecto_DL/blob/16ef8c600adf08b3ed55e2a50b2cb5a7485f1a2a/App/models/YOLO_model_1.pt?raw=true'
+    response2 = requests.get(model_yolo_path)
+    with open("models/YOLO_model.pt", "wb") as file2:
+        file2.write(response2.content)
+
+# carga modelo de U-Net Placas Postes streamlit
+if not os.path.exists("models/postes_320_320.h5"):
+    model_unet_postes_path = 'https://github.com/j2sanabriam/Proyecto_DL/blob/16ef8c600adf08b3ed55e2a50b2cb5a7485f1a2a/App/models/postes_320_320.h5?raw=true'
+    response3 = requests.get(model_unet_postes_path)
+    with open("models/postes_320_320.h5", "wb") as file3:
+        file3.write(response3.content)
+
+# carga modelo de U-Net Placas Trasformadores streamlit
+if not os.path.exists("models/placas_segmentation_resize_320_320_resize.h5"):
+    model_unet_transformador_path = 'https://github.com/j2sanabriam/Proyecto_DL/blob/16ef8c600adf08b3ed55e2a50b2cb5a7485f1a2a/App/models/placas_segmentation_resize_320_320_resize.h5?raw=true'
+    response4 = requests.get(model_unet_transformador_path)
+    with open("models/placas_segmentation_resize_320_320_resize.h5", "wb") as file4:
+        file4.write(response4.content)
+
 
 
 if 'file' not in st.session_state:
@@ -33,9 +66,12 @@ if not st.session_state['file']:
         st.session_state['file'] = photo
 
     # MODELO CLASIFICACIÓN
-        # Cargar el modelo de clasificación
-        model_clsf_path = './models/clf_model.h5'
-        model_clsf = tf.keras.models.load_model(model_clsf_path)
+        # Ejecución página localmente
+        # model_clsf_path = './models/clf_model.h5'
+        # model_clsf = tf.keras.models.load_model(model_clsf_path)
+
+        # Ejecución página streamlit
+        model_clsf = tf.keras.models.load_model("models/clf_model.h5")
 
         # Cargar y preparar la imagen
         img = image.load_img(uploaded_photo, target_size=(128, 128), color_mode='grayscale')
@@ -54,8 +90,9 @@ if not st.session_state['file']:
         if predicted_class == 0:
             st.write("Placa de Poste")
 
-        # APLICACIÓN MODELO  YOLO SOBRE PLACAS DE POSTES
-            YOLO_model_path = "./models/YOLO_model.pt"
+        # APLICACIÓN MODELO YOLO SOBRE PLACAS DE POSTES
+            # YOLO_model_path = "./models/YOLO_model.pt"
+            YOLO_model_path = "models/YOLO_model.pt"
             # Cargar el modelo
             YOLO_model = torch.hub.load("ultralytics/yolov5:master", "custom", path=YOLO_model_path)
 
@@ -66,7 +103,8 @@ if not st.session_state['file']:
             st.image(image_with_boxes, use_column_width=True)
 
         # APLICACIÓN MODELO MÁSCARA PARA POSTES
-            modelo_ruta_mask_poste = './models/postes_320_320.h5'
+            # modelo_ruta_mask_poste = './models/postes_320_320.h5'
+            modelo_ruta_mask_poste = 'models/postes_320_320.h5'
             # Cargar el modelo
             postes_mask_model = load_model(modelo_ruta_mask_poste)
 
@@ -115,7 +153,8 @@ if not st.session_state['file']:
             st.write("Placa de Trasformador")
 
         # APLICACIÓN MODELO MÁSCARA PARA POSTES
-            modelo_ruta_mask_placa = './models/placas_segmentation_resize_320_320_resize.h5'
+            # modelo_ruta_mask_placa = './models/placas_segmentation_resize_320_320_resize.h5'
+            modelo_ruta_mask_placa = 'models/placas_segmentation_resize_320_320_resize.h5'
             # Cargar el modelo
             placa_mask_model = load_model(modelo_ruta_mask_placa)
 
