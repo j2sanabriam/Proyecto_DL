@@ -33,12 +33,9 @@ if not st.session_state['file']:
         st.session_state['file'] = photo
 
     # MODELO CLASIFICACIÓN
-        # Ejecución página localmente
-        # model_clsf_path = './models/clf_model.h5'
-        # model_clsf = tf.keras.models.load_model(model_clsf_path)
 
         # Ejecución página streamlit
-        # model_clsf = tf.keras.models.load_model("models/clf_model.h5")
+        model_clsf = tf.keras.models.load_model("models/postes_320_320.h5")
 
         # Cargar y preparar la imagen
         img = image.load_img(uploaded_photo, target_size=(128, 128), color_mode='grayscale')
