@@ -17,6 +17,7 @@ st.title("TechScan NN")
 st.title("Reconocimiento de Texto en Imágenes de Equipos Eléctricos")
 st.write("Esta aplicación permite clasificar imágenes en 4 clases diferentes (trasformadores, placas de transformadores, características de postros y placas de postes). Adicionalmente, si la imagen pertence a las clases de placas, se ejecutan modelos de detección de objetos y aplicación de máscaras para reconocer el texto. Se realizar el procesamiento una imagen a la vez.")
 
+"""
 # CARGA DE MODELOS QUE UTILIZA LA PÁGINA
 
 # carga modelo de clasificación streamlit
@@ -46,7 +47,7 @@ if not os.path.exists("models/placas_segmentation_resize_320_320_resize.h5"):
     response4 = requests.get(model_unet_transformador_path)
     with open("models/placas_segmentation_resize_320_320_resize.h5", "wb") as file4:
         file4.write(response4.content)
-
+"""
 
 
 if 'file' not in st.session_state:
