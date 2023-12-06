@@ -43,8 +43,8 @@ numpy==1.26.2
 oauthlib==3.2.2
 # opencv-python==4.8.1.78
 # opencv-python-headless==4.5.3.56
-opencv-python<4.3
-opencv-python-headless<4.3
+opencv-python<4.6
+opencv-python-headless<4.6
 opt-einsum==3.3.0
 packaging==23.2
 pandas==2.1.3
